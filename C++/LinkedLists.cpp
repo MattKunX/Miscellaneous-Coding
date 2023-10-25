@@ -43,12 +43,13 @@ void DoublyLinkedList::Add(int item) {
 }
 
 // LIFO
+template <typename T>
 class SinglyLinkedList {
 
 public:
     struct Node {
         std::unique_ptr<Node> upNext;
-        int data = 0;
+        T data = 0;
     };
 
 private:
@@ -66,54 +67,62 @@ public:
     Node* last();
     Node* current();
     Node* end();
-    Node* find(int value);
-    int current_value();
+    Node* find(T value);
+    T current_value();
     
     // add to front of list
-    void add(int item);
-    bool remove(int value);
+    void add(T item);
+    bool remove(T value);
 
     // move iterator forward one node
     bool next();
     void reset_iterator();
 };
 
-SinglyLinkedList::SinglyLinkedList() {
+template <typename T>
+SinglyLinkedList<T>::SinglyLinkedList() {
     this->upHead = nullptr;
     this->pTail = nullptr;
     this->iterator = nullptr;
 }
 
 // prevent stackoverflow of unique_ptr from std::default_delete 
-SinglyLinkedList::~SinglyLinkedList() {
+template <typename T>
+SinglyLinkedList<T>::~SinglyLinkedList() {
     while (this->upHead) {
         auto next = std::move(upHead->upNext);
         this->upHead = std::move(next); 
     } 
 }
 
-SinglyLinkedList& SinglyLinkedList::operator++() {
+template <typename T>
+SinglyLinkedList<T>& SinglyLinkedList<T>::operator++() {
     this->next();
     return *this;
 }
 
-SinglyLinkedList::Node* SinglyLinkedList::first() {
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::first() {
     return this->upHead.get();
 }
 
-SinglyLinkedList::Node* SinglyLinkedList::last() {
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::last() {
     return this->pTail;
 }
 
-SinglyLinkedList::Node* SinglyLinkedList::current() {
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::current() {
     return this->iterator;
 }
 
-SinglyLinkedList::Node* SinglyLinkedList::end() {
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::end() {
     return nullptr;
 }
 
-SinglyLinkedList::Node* SinglyLinkedList::find(int value) {
+template <typename T>
+typename SinglyLinkedList<T>::Node* SinglyLinkedList<T>::find(T value) {
     this->reset_iterator();
 
     while (this->iterator->data != value && this->next()) {}
@@ -123,11 +132,13 @@ SinglyLinkedList::Node* SinglyLinkedList::find(int value) {
     return node;
 }
 
-int SinglyLinkedList::current_value() {
+template <typename T>
+T SinglyLinkedList<T>::current_value() {
     return this->iterator->data;
 }
 
-void SinglyLinkedList::add(int item) {
+template <typename T>
+void SinglyLinkedList<T>::add(T item) {
     std::unique_ptr<Node> newNode(new Node);
     newNode->upNext = std::move(this->upHead); // point new node to current head (font node)
     newNode->data = item;
@@ -144,7 +155,8 @@ void SinglyLinkedList::add(int item) {
     std::cout << upHead.get() << ": " << upHead.get()->data << " Added Node" << std::endl;
 }
 
-bool SinglyLinkedList::remove(int value) {
+template <typename T>
+bool SinglyLinkedList<T>::remove(T value) {
     this->reset_iterator();
 
     Node *prev = nullptr;
@@ -179,7 +191,8 @@ bool SinglyLinkedList::remove(int value) {
     return false;
 }
 
-bool SinglyLinkedList::next() {
+template <typename T>
+bool SinglyLinkedList<T>::next() {
     if (this->iterator) {
         if (this->iterator->upNext){
             this->iterator = this->iterator->upNext.get();
@@ -190,20 +203,21 @@ bool SinglyLinkedList::next() {
     return false;
 }
 
-void SinglyLinkedList::reset_iterator() {
+template <typename T>
+void SinglyLinkedList<T>::reset_iterator() {
     this->iterator = this->upHead.get();
 }
 
 int main() {
     std::cout << "Singly Linked List" << std::endl;
 
-    SinglyLinkedList list;
+    SinglyLinkedList<char> list;
 
-    list.add(5);
-    list.add(10);
-    list.add(600);
-    list.add(33);
-    list.add(9);
+    list.add(122);
+    list.add(100);
+    list.add(88);
+    list.add(73);
+    list.add(65);
 
     std::cout << std::endl << "do-while loop:" << std::endl;
 
@@ -215,8 +229,8 @@ int main() {
 
     std::cout << std::endl << std::endl;
 
-    int r = 9;
-    SinglyLinkedList::Node *removed_node = list.find(r);
+    char r = 88;
+    SinglyLinkedList<char>::Node *removed_node = list.find(r);
     std::cout << "Remove " << r << ": " << list.remove(r) << std::endl;
     std::cout << r << " value address check: " << removed_node << ": " << removed_node->data << std::endl;
 
@@ -234,10 +248,10 @@ int main() {
 
     std::cout << std::endl << "search:" << std::endl;
 
-    SinglyLinkedList::Node* found = list.find(600);
+    SinglyLinkedList<char>::Node* found = list.find(122);
     std::cout << "found: " << found << ": " << found->data << std::endl;
 
-    SinglyLinkedList::Node* notfound = list.find(2);
+    SinglyLinkedList<char>::Node* notfound = list.find(2);
     if (!notfound)
         std::cout << "2 not found: " << notfound << std::endl;
 
