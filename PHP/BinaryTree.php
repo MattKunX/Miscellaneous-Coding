@@ -77,7 +77,7 @@
             return array_shift($this->queue);
         }
         
-        // Breadth Frist
+        // Breadth First
         public function printTree() {
             $this->queue[] = $this->nodes;
             
